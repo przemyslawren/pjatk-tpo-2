@@ -3,8 +3,9 @@ public class Main {
         Service s = new Service("Poland");
         String weatherJson = s.getWeather("Warsaw");
         System.out.println(weatherJson);
-//        Double rate1 = s.getRateFor("USD");
+        Double rate1 = s.getRateFor("USD");
 //        Double rate2 = s.getNBPRate();
+        System.out.println(rate1);
         // ...
         // część uruchamiająca GUI
     }

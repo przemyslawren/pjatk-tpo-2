@@ -7,17 +7,17 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class Service {
-    private final String apiKey = "3bf47a4cc9cb78dce3f01b190307fb6b";
-
+    Country country;
     Service(String country) {
-
+        this.country = new Country();
     }
 
     // zwraca informację o pogodzie w podanym mieście danego kraju w formacie JSON (to ma być pełna informacja
     // uzyskana z serwisu openweather - po prostu tekst w formacie JSON)s
     String getWeather(String city) {
         String weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q=";
-        String apiUrl = "&appid=" + this.apiKey;
+        String apiKey = "3bf47a4cc9cb78dce3f01b190307fb6b";
+        String apiUrl = "&appid=" + apiKey;
         String encodedCity = URLEncoder.encode(city, StandardCharsets.UTF_8);
         String fullUrl = weatherUrl + encodedCity + apiUrl;
 
@@ -43,8 +43,30 @@ public class Service {
         }
     }
         // zwraca kurs waluty danego kraju wobec waluty podanej jako argument
-        private Double getRateFor (String kod_waluty){
-            return 4.25;
+        Double getRateFor(String kod_waluty){
+            String exchangeRateUrl = "https://open.er-api.com/v6/latest/";
+            String encodedCurrency = URLEncoder.encode(kod_waluty, StandardCharsets.UTF_8);
+            String fullUrl = exchangeRateUrl + encodedCurrency;
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(fullUrl))
+                    .GET()
+                    .build();
+            try {
+                HttpResponse<String> response =
+                        client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return Double.valueOf(response.body());
+                } else {
+                    throw new RuntimeException(
+                            "Failed to fetch currency data: HTTP Response code: " + response.statusCode());
+                }
+            } catch (IOException | InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Error fetching currency data");
+            }
         }
         // zwraca kurs złotego wobec waluty danego kraju
         private Double getNBPRate () {
