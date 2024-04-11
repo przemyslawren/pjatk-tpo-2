@@ -9,12 +9,11 @@ public class Browser extends Region {
     private final WebEngine webEngine = browser.getEngine();
 
     public Browser() {
-        webEngine.load("https://en.wikipedia.org/wiki/Main_Page");
         getChildren().add(browser);
     }
 
-    public void loadPage(String city) {
-        webEngine.load("https://en.wikipedia.org/wiki/"+city);
+    public void loadPage(String location) {
+        webEngine.load("https://en.wikipedia.org/wiki/" + location);
     }
 
     @Override

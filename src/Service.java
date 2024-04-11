@@ -9,7 +9,7 @@ import java.util.Locale;
 import org.json.JSONObject;
 
 public class Service {
-    private final Locale locale;
+    private volatile Locale locale;
 
     Service(String country) {
         this.locale = getLocaleFromName(country);
@@ -23,6 +23,11 @@ public class Service {
             if (country.equals(locale.getDisplayCountry(Locale.ENGLISH).toLowerCase()))
                 return locale;
         return null;
+    }
+
+    public void setCountry(String country) {
+        this.locale = getLocaleFromName(country);
+        System.out.println("Updated locale: " + this.locale);
     }
 
     String getWeather(String city) {
@@ -39,16 +44,10 @@ public class Service {
 
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            JSONObject obj = new JSONObject(response.body());
-            double temperatureInKelvin = obj.getJSONObject("main").getDouble("temp");
-            int temperatureInCelsius = (int) (temperatureInKelvin - 273.15);
-//
-//            String weatherDescription = obj
-//                    .getJSONArray("weather")
-//                    .getJSONObject(0)
-//                    .getString("description");
 
-//            return temperatureInCelsius + "°C " + weatherDescription;
+            if (response.statusCode() == 404) {
+                return "City not found. Please check the city name and country";
+            }
 
             return response.body();
 
@@ -92,6 +91,11 @@ public class Service {
 
     // zwraca kurs złotego wobec waluty danego kraju
     Double getNBPRate() {
+
+        String countryCode = locale.getCountry();
+        Currency currency = Currency.getInstance(locale);
+        String currencyCode = currency.getCurrencyCode();
+
         String fullUrl = "https://open.er-api.com/v6/latest/PLN";
         Double rate = null;
 
@@ -109,11 +113,15 @@ public class Service {
 
             Double PLN = obj.getJSONObject("rates")
                     .getDouble("PLN");
-            Locale locale = Locale.getDefault();
-            Double countryCurrency = obj.getJSONObject("rates")
-                    .getDouble(String.valueOf(Currency.getInstance(locale)));
 
-            rate = PLN/countryCurrency;
+            // Sprawdzenie, czy odpowiedź zawiera walutę kraju
+            if(obj.getJSONObject("rates").has(currencyCode)) {
+                Double countryCurrencyRate = obj.getJSONObject("rates").getDouble(currencyCode);
+                rate = 1 / countryCurrencyRate; // Obliczenie kursu waluty kraju względem PLN
+            } else {
+                System.out.println("Currency not found in response.");
+                return null;
+            }
             return rate;
 
         } catch (IOException | InterruptedException e) {
