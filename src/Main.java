@@ -11,6 +11,6 @@ public class Main {
         System.out.println(rate2);
         // ...
         // część uruchamiająca GUI
-        Application.launch(WeatherAndRatesApp.class);
+        Application.launch(WeatherRatesApp.class);
     }
 }

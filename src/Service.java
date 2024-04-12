@@ -33,7 +33,7 @@ public class Service {
 
     String getWeather(String city) {
         String weatherUrl = "https://api.openweathermap.org/data/2.5/weather?q=";
-        String apiKey = "3bf47a4cc9cb78dce3f01b190307fb6b";
+        String apiKey = "YOUR_API_KEY";
         String fullUrl = weatherUrl + city + "," + locale.getCountry() + "&appid=" + apiKey;
 
         HttpClient client = HttpClient.newHttpClient();

@@ -10,17 +10,17 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class WeatherAndRatesApp extends Application {
+public class WeatherRatesApp extends Application {
     private Service service;
-
-    private Browser browser;
+    private WebBrowser webBrowser;
 
     @Override
     public void start(Stage primaryStage) {
         service = new Service("Poland");
-        browser = new Browser();
+        webBrowser = new WebBrowser();
 
         BorderPane borderPane = new BorderPane();
         borderPane.setPadding(new Insets(5));
@@ -66,7 +66,7 @@ public class WeatherAndRatesApp extends Application {
         HBox.setHgrow(textFieldsBox, javafx.scene.layout.Priority.ALWAYS);
 
         borderPane.setTop(infoBar);
-        borderPane.setCenter(browser);
+        borderPane.setCenter(webBrowser);
 
         loadDefaultData(weatherLabel,selectedCurrencyLabel , NBPlabel);
 
@@ -96,20 +96,26 @@ public class WeatherAndRatesApp extends Application {
             Double rateValue = service.getRateFor(currency);
             Double rateNBPValue = service.getNBPRate();
 
-            JSONObject obj = new JSONObject(weatherJson);
-            double temperatureInKelvin = obj.getJSONObject("main").getDouble("temp");
-            String weatherDescription = obj.getJSONArray("weather").getJSONObject(0).getString("description");
+            try {
+                JSONObject obj = new JSONObject(weatherJson);
 
-            int temperatureInCelsius = (int) (temperatureInKelvin - 273.15);
+                double temperatureInKelvin = obj.getJSONObject("main").getDouble("temp");
+                String weatherDescription = obj.getJSONArray("weather").getJSONObject(0).getString("description");
+                int temperatureInCelsius = (int) (temperatureInKelvin - 273.15);
 
-            String finalWeatherText = temperatureInCelsius + "°C, " + weatherDescription;
+                weatherJson = temperatureInCelsius + "°C, " + weatherDescription;
+
+            } catch (JSONException e) {
+                weatherJson = "City not found";
+            }
+            String finalWeatherText = weatherJson;
 
             Platform.runLater(() -> {
                 weather.setText(finalWeatherText);
                 rate.setText(String.format("%.2f", rateValue));
                 rateNBP.setText(String.format("%.2f", rateNBPValue));
 
-                browser.loadPage(location);
+                webBrowser.loadPage(location);
             });
         }).start();
     }
@@ -117,6 +123,6 @@ public class WeatherAndRatesApp extends Application {
     private void loadDefaultData(Label weather, Label rate, Label rateNBP) {
         loadData("Poland","Warsaw", "USD", weather, rate, rateNBP);
 
-        browser.loadPage("Warsaw");
+        webBrowser.loadPage("Warsaw");
     }
 }

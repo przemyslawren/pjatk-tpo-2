@@ -4,11 +4,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-public class Browser extends Region {
+public class WebBrowser extends Region {
     private final WebView browser = new WebView();
     private final WebEngine webEngine = browser.getEngine();
 
-    public Browser() {
+    public WebBrowser() {
         getChildren().add(browser);
     }
 
