@@ -27,5 +27,5 @@ public class Main {
 Uwaga 1: zdefiniowanie pokazanych metod w sposób niezalezny od GUI jest obowiązkowe.
 Uwaga 2:  W katalogu projektu (np. w podkatalogu lib) nalezy umiescic wykorzystywane JARy (w przeciwnym razie program nie przejdzie kompilacji) i skonfigurowac Build Path tak, by wskazania na te JARy byly w Build Path zawarte.
 
-![weatherrates_1](https://github.com/przemyslawren/pjatk-tpo-2/assets/122983696/72241396-16fd-4093-9107-d27d1479f389)
-![weatherrates_2](https://github.com/przemyslawren/pjatk-tpo-2/assets/122983696/30eadb1f-b397-42ae-8b4b-b19dd8f1b435)
+![weather_rates_1](https://github.com/przemyslawren/pjatk-tpo-2/assets/122983696/539ebb77-aaf5-4c34-988f-94ce47cc2455)
+![weather_rates_2](https://github.com/przemyslawren/pjatk-tpo-2/assets/122983696/341b6dd4-9f1b-43e8-bb12-02cc37b968cb)
