@@ -37,7 +37,7 @@ public class WeatherRatesApp extends Application {
         Label locationLabel = new Label("Location: ");
         TextField locationTextField = new TextField("Warsaw");
 
-        Label currencyLabel = new Label("Currency: ");
+        Label currencyLabel = new Label("Currency rate: ");
         TextField currencyTextField = new TextField("USD");
 
         Button updateButton = new Button("Update");
@@ -50,10 +50,10 @@ public class WeatherRatesApp extends Application {
         labelBox.setSpacing(5);
         Label weatherTextLabel = new Label("Weather: ");
         Label weatherLabel = new Label();
-        Label selectedCurrencyTextLabel = new Label("Selected rate: ");
+        Label selectedCurrencyTextLabel = new Label("Rate comparison: ");
         Label selectedCurrencyLabel = new Label();
 
-        Label NBPtextLabel = new Label("Rate of PLN: ");
+        Label NBPtextLabel = new Label("Rate for PLN: ");
         Label NBPlabel = new Label();
         labelBox.getChildren().addAll(weatherTextLabel, weatherLabel, selectedCurrencyTextLabel,
                 selectedCurrencyLabel,
