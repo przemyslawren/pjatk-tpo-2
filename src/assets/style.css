@@ -1,0 +1,11 @@
+.infobar-style .label {
+    -fx-font-size: 16px;
+}
+
+.infobar-style .button {
+    -fx-font-size: 14px;
+}
+
+.infobar-style .text-field {
+    -fx-font-size: 14px;
+}

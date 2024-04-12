@@ -1,6 +1,7 @@
 import java.util.Objects;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,12 +23,17 @@ public class WeatherAndRatesApp extends Application {
         browser = new Browser();
 
         BorderPane borderPane = new BorderPane();
+        borderPane.setPadding(new Insets(5));
 
-        // Location Box
-        HBox locationBox = new HBox();
+        // Text Fields Box
+        HBox textFieldsBox = new HBox();
+        textFieldsBox.setSpacing(5);
 
         Label countryLabel = new Label("Country: ");
+        countryLabel.setStyle("-fx-font-size: 16px");
         TextField countryTextField = new TextField("Poland");
+
+        countryTextField.setStyle("-fx-font-size: 14px");
         Label locationLabel = new Label("Location: ");
         TextField locationTextField = new TextField("Warsaw");
 
@@ -36,32 +42,28 @@ public class WeatherAndRatesApp extends Application {
 
         Button updateButton = new Button("Update");
 
-        locationBox.getChildren().addAll(countryLabel, countryTextField, locationLabel,
+        textFieldsBox.getChildren().addAll(countryLabel, countryTextField, locationLabel,
                 locationTextField, currencyLabel, currencyTextField, updateButton);
 
-        // Weather Box
-        HBox weatherBox = new HBox();
-
+        // Label Box
+        HBox labelBox = new HBox();
+        labelBox.setSpacing(5);
+        Label weatherTextLabel = new Label("Weather: ");
         Label weatherLabel = new Label();
-        weatherBox.getChildren().add(weatherLabel);
-
-
-        // Currency Box
-        HBox currencyBox = new HBox();
-
         Label selectedCurrencyTextLabel = new Label("Selected rate: ");
         Label selectedCurrencyLabel = new Label();
 
         Label NBPtextLabel = new Label("Rate of PLN: ");
         Label NBPlabel = new Label();
-        currencyBox.getChildren().addAll(selectedCurrencyTextLabel,selectedCurrencyLabel,
+        labelBox.getChildren().addAll(weatherTextLabel, weatherLabel, selectedCurrencyTextLabel,
+                selectedCurrencyLabel,
                 NBPtextLabel,NBPlabel);
 
         HBox infoBar = new HBox();
-
-        infoBar.getChildren().addAll(locationBox, weatherBox, currencyBox);
-        HBox.setHgrow(locationBox, javafx.scene.layout.Priority.ALWAYS);
-        HBox.setHgrow(weatherBox, javafx.scene.layout.Priority.ALWAYS);
+        infoBar.getStyleClass().add("infobar-style");
+        infoBar.setPadding(new Insets(10));
+        infoBar.getChildren().addAll(textFieldsBox, labelBox);
+        HBox.setHgrow(textFieldsBox, javafx.scene.layout.Priority.ALWAYS);
 
         borderPane.setTop(infoBar);
         borderPane.setCenter(browser);
@@ -75,7 +77,9 @@ public class WeatherAndRatesApp extends Application {
             loadData(country, location, currency, weatherLabel, selectedCurrencyLabel, NBPlabel);
         });
 
-        Scene scene = new Scene(borderPane, 1280, 720);
+        Scene scene = new Scene(borderPane, 1920, 1080);
+        scene.getStylesheets().add(
+                Objects.requireNonNull(getClass().getResource("assets/style.css")).toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Money Rain");
         Image appIcon = new Image(
@@ -96,10 +100,8 @@ public class WeatherAndRatesApp extends Application {
             double temperatureInKelvin = obj.getJSONObject("main").getDouble("temp");
             String weatherDescription = obj.getJSONArray("weather").getJSONObject(0).getString("description");
 
-            // Przeliczanie temperatury na stopnie Celsjusza lub inne przetwarzanie
             int temperatureInCelsius = (int) (temperatureInKelvin - 273.15);
 
-            // Przygotowanie tekstu do wyświetlenia
             String finalWeatherText = temperatureInCelsius + "°C, " + weatherDescription;
 
             Platform.runLater(() -> {

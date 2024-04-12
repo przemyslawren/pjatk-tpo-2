@@ -6,10 +6,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Currency;
 import java.util.Locale;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Service {
-    private volatile Locale locale;
+    private Locale locale;
 
     Service(String country) {
         this.locale = getLocaleFromName(country);
@@ -40,7 +41,7 @@ public class Service {
                 .uri(URI.create(fullUrl))
                 .GET()
                 .build();
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
 
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -57,10 +58,9 @@ public class Service {
         }
     }
 
-    // zwraca kurs waluty danego kraju wobec waluty podanej jako argument
     Double getRateFor(String currency) {
         String fullUrl = "https://open.er-api.com/v6/latest/" + currency;
-        Double rate = null;
+        double rate;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -83,21 +83,20 @@ public class Service {
 
             return rate;
 
-        } catch (IOException | InterruptedException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
-            return rate;
+            return null;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    // zwraca kurs złotego wobec waluty danego kraju
     Double getNBPRate() {
-
-        String countryCode = locale.getCountry();
         Currency currency = Currency.getInstance(locale);
         String currencyCode = currency.getCurrencyCode();
 
         String fullUrl = "https://open.er-api.com/v6/latest/PLN";
-        Double rate = null;
+        double rate;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -114,19 +113,16 @@ public class Service {
             Double PLN = obj.getJSONObject("rates")
                     .getDouble("PLN");
 
-            // Sprawdzenie, czy odpowiedź zawiera walutę kraju
-            if(obj.getJSONObject("rates").has(currencyCode)) {
-                Double countryCurrencyRate = obj.getJSONObject("rates").getDouble(currencyCode);
-                rate = 1 / countryCurrencyRate; // Obliczenie kursu waluty kraju względem PLN
-            } else {
-                System.out.println("Currency not found in response.");
-                return null;
-            }
+            Double countryCurrencyRate = obj.getJSONObject("rates").getDouble(currencyCode);
+            rate = PLN / countryCurrencyRate;
+
             return rate;
 
-        } catch (IOException | InterruptedException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
-            return rate;
+            return null;
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
